@@ -1,0 +1,78 @@
+# ============================================
+# SLM Orchestration Legal RAG System
+# Complete Requirements File
+# ============================================
+
+# Core Web Framework
+streamlit>=1.28.0
+fastapi>=0.104.0
+uvicorn>=0.24.0
+
+# LangChain Ecosystem (Required for RAG and Agents)
+langchain>=0.1.0
+langchain-core>=0.1.0
+langchain-community>=0.0.10
+langchain-chroma>=0.1.0
+langchain-openai>=0.0.5
+langchain-groq>=0.0.1
+langchain-huggingface>=0.0.1
+
+# Additional LangChain packages
+langchain-text-splitters>=0.0.1
+
+# Vector Databases and Embeddings
+chromadb>=0.4.15
+sentence-transformers>=2.2.2
+faiss-cpu>=1.7.4
+
+# Machine Learning - SLM Orchestration (Flan-T5)
+torch>=2.0.0
+transformers>=4.35.0
+sentencepiece>=0.1.99  # Required for T5 models
+accelerate>=0.24.0
+
+# OpenAI (for GPT-4 baseline and embeddings)
+openai>=1.0.0
+
+# Groq API (for answering agent)
+groq>=0.4.0
+
+# Data Validation
+pydantic>=2.5.0
+pydantic-settings>=2.1.0
+
+# Numerical Computing
+numpy>=1.24.0
+pandas>=2.0.0
+scikit-learn>=1.3.0
+
+# Visualization
+plotly>=5.17.0
+
+# Data Processing
+PyPDF2>=3.0.1
+python-docx>=1.1.0
+beautifulsoup4>=4.12.2
+
+# Web Scraping and APIs
+requests>=2.31.0
+aiohttp>=3.9.0
+feedparser>=6.0.10
+
+# Utilities
+python-dotenv>=1.0.0
+tqdm>=4.66.0
+schedule>=1.2.0
+
+# Testing
+pytest>=7.4.0
+pytest-asyncio>=0.21.0
+pytest-cov>=4.1.0
+
+# Development (Optional)
+black>=23.0.0
+flake8>=6.0.0
+
+# Note: For GPU support, install:
+# torch (with CUDA support)
+# faiss-gpu (instead of faiss-cpu)

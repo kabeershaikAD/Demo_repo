@@ -1,0 +1,166 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# Virtual Environments
+.venv/
+venv/
+ENV/
+env/
+legal_rag_env/
+*.env
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+config.env
+*.key
+*.pem
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.spyderproject
+.spyproject
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb
+
+# PyCharm
+.idea/
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Database files
+*.db
+*.sqlite
+*.sqlite3
+*.db-journal
+indian_legal_db.sqlite
+law_buddy.db
+chroma.sqlite3
+
+# Vector databases (exclude from git, users need to build their own)
+chroma_db*/
+chroma_db_*/
+chroma_db_consolidated/
+vector_db/
+*.faiss
+*.index
+*.pkl
+*.docs.pkl
+*.meta.pkl
+
+# Model files (too large for git)
+*.bin
+*.safetensors
+*.onnx
+models/
+checkpoints/
+
+# Logs
+logs/
+*.log
+*.log.*
+
+# Data directories (exclude large datasets)
+data/
+indian_legal_data/
+raw_data/
+processed_data/
+
+# Temporary files
+*.tmp
+*.temp
+temp/
+tmp/
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+desktop.ini
+
+# Large document files
+*.pdf
+*.docx
+*.doc
+*.zip
+*.tar.gz
+*.rar
+
+# Executable files (too large)
+*.exe
+*.msi
+*.dmg
+
+# API keys and secrets
+secrets.json
+credentials.json
+kaggle.json
+
+# Research papers (too large)
+Research_papers/
+*.pptx
+
+# Evaluation outputs
+evaluation/*.csv
+evaluation/*.json
+evaluation/*.md
+evaluation/reports/
+
+# Streamlit cache
+.streamlit/
+
+# Python cache
+.python-version
+
+# Hugging Face cache (optional, but can be large)
+.cache/
+huggingface/

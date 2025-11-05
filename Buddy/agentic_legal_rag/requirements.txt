@@ -1,0 +1,82 @@
+# Core dependencies
+streamlit>=1.28.0
+fastapi>=0.104.0
+uvicorn>=0.24.0
+pydantic>=2.5.0
+
+# LangChain ecosystem
+langchain>=0.1.0
+langchain-core>=0.1.0
+langchain-community>=0.0.10
+langchain-groq>=0.0.1
+langchain-huggingface>=0.0.1
+
+# Vector databases and embeddings
+chromadb>=0.4.15
+sentence-transformers>=2.2.2
+faiss-cpu>=1.7.4
+
+# Machine Learning - SLM Orchestration
+torch>=2.0.0
+transformers>=4.35.0
+sentencepiece>=0.1.99  # Required for T5 models
+numpy>=1.24.0
+scikit-learn>=1.3.0
+
+# SLM Orchestration specific
+openai>=1.0.0  # For GPT-4 baseline
+asyncio-mqtt>=0.11.0  # For async operations
+
+# Evaluation metrics
+evaluate>=0.4.1
+bert-score>=0.3.13
+
+# Data processing
+pandas>=2.0.0
+plotly>=5.17.0
+
+# Web scraping and APIs
+requests>=2.31.0
+beautifulsoup4>=4.12.0
+feedparser>=6.0.10
+schedule>=1.2.0
+kaggle>=1.5.16
+
+# Additional scraping and data sources
+datasets>=2.14.0
+huggingface-hub>=0.17.0
+nltk>=3.8.0
+spacy>=3.7.0
+
+# Document processing
+PyPDF2>=3.0.1
+python-docx>=1.1.0
+pytesseract>=0.3.10
+
+# Audio processing (for voice features)
+pygame>=2.5.0
+speechrecognition>=3.10.0
+gtts>=2.4.0
+audio-recorder-streamlit>=0.0.8
+
+# Translation
+opustools>=0.9.0
+
+# Utilities
+python-dotenv>=1.0.0
+tqdm>=4.66.0
+pathlib>=1.0.1
+
+# Testing
+pytest>=7.4.0
+pytest-cov>=4.1.0
+
+# Development
+black>=23.0.0
+flake8>=6.0.0
+mypy>=1.7.0
+
+# Optional: GPU support (uncomment if using GPU)
+# torch-gpu>=2.0.0
+# faiss-gpu>=1.7.4
+
