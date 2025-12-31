@@ -1,0 +1,17 @@
+# Agentic Legal RAG System with SLM Orchestration - Project Abstract
+
+## Abstract
+
+Multi-agent systems in artificial intelligence face significant challenges in orchestration and coordination, particularly when dealing with complex domain-specific tasks that require specialized reasoning and efficient resource utilization. Traditional orchestration approaches rely on rule-based systems or large language models that are either too rigid for dynamic decision-making or computationally expensive for practical deployment. Current agent orchestration methods struggle with intelligent query analysis, optimal agent selection, and dynamic workflow adaptation, resulting in inefficient resource allocation and limited scalability. The absence of lightweight yet intelligent orchestration mechanisms further restricts the practical deployment of multi-agent systems in resource-constrained environments, particularly in specialized domains that require both accuracy and efficiency.
+
+This project introduces a novel Small Language Model (SLM) orchestration approach for multi-agent systems, built using Python and Flan-T5-small as the central orchestrator for intelligent agent coordination and workflow management. Unlike traditional rule-based or large model orchestration, the SLM orchestrator employs natural language understanding to analyze query complexity, determine optimal processing pathways, and dynamically coordinate multiple specialized agents including query enhancement, document retrieval, and response generation agents. The SLM orchestrator uses structured JSON communication to manage agent workflows, implements intelligent routing based on domain analysis, and provides lightweight decision-making capabilities that reduce computational overhead while maintaining sophisticated reasoning. The system integrates multilingual support, dynamic document updating, and comprehensive logging, all orchestrated through the efficient SLM-based coordination mechanism. A Streamlit-based user interface enables intuitive interaction, while the lightweight orchestration architecture supports easy deployment and maintenance across diverse computational environments.
+
+The SLM-based orchestration represents a significant departure from traditional orchestration methods, demonstrating superior computational efficiency and intelligent agent coordination through lightweight yet effective reasoning mechanisms. The specialized capabilities of the Flan-T5-small orchestrator enable sophisticated query analysis and optimal agent routing with minimal computational overhead, representing a new paradigm in multi-agent system design. The modular architecture allows for easy integration of additional agents and domains, while the efficient orchestration system enables practical deployment in various computational environments. The project represents a significant advancement in agent orchestration technology, providing a novel and efficient approach to multi-agent coordination that maintains high accuracy and reliability while dramatically reducing computational requirements compared to traditional large model orchestration approaches.
+a
+**Name:** [Your Name]  
+**Roll No:** [Your Roll Number]  
+**Email:** [Your Email]  
+**Phone:** [Your Phone Number]  
+
+**Signature of the Supervisor:** Dr. V. Prashanthi (Associate Professor)  
+**Signature of the Co-Supervisor:** Mr. V. Srikanth (Assistant Professor)
