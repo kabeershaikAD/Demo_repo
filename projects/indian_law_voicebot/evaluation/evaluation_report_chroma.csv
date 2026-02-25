@@ -1,0 +1,479 @@
+Query,Prediction,Reference,Cosine Similarity,BLEU,ROUGE-1,ROUGE-2,ROUGE-L,Exact Match,Token Overlap Accuracy,Hit@3,MRR@3,Answer Relevance (GPT),Groundedness (GPT),Context Relevance (GPT),BERTScore-F1,BERTScore-P,BERTScore-R
+What is a legal heir certificate?,"**Direct Answer:**
+A legal heir certificate is a document that establishes the legal relationship between an individual and their heirs. It is typically issued by a court or a government agency and serves as proof of inheritance rights.
+
+**Relevant Legal Provisions/Sections:**
+1. Section 32 of the Indian Succession Act, 1925 (for Indian context)
+2. Article 2 of the Uniform Probate Code (for US context)
+
+**Simple Explanation:**
+In simple terms, a legal heir certificate is a document that proves who inherits property, assets, or other belongings after the owner passes away. It helps to resolve disputes and provides clarity on the distribution of the deceased person's estate among their heirs.
+
+**Related Topics for Further Exploration:**
+1. Probate law
+2. Inheritance laws
+3. Succession planning
+4. Estate administration
+5. Heirship proceedings
+
+**Legal Category Classification:**
+Civil Law
+
+**Disclaimer:**
+This is not legal advice. Please consult a qualified legal professional for specific legal matters.",A legal heir certificate is issued to identify the rightful heirs of a deceased person for transferring assets and claims.,0.8169512152671814,0.02883938180159795,0.20645161290322583,0.065359477124183,0.15483870967741936,0.0,0.65,0,0,0.9,0.8,0.85,0.8681359887123108,0.8278488516807556,0.912544846534729
+What is FIR?,"Here is a comprehensive response to your query:
+
+**Direct Answer:** A First Information Report (FIR) is a written document that is lodged with the police by a victim or an eyewitness of a crime, or by someone who has knowledge about the commission of a crime.
+
+**Relevant Legal Provisions:** Section 154 of the Code of Criminal Procedure, 1973, provides for the filing of an FIR.
+
+**Simple Explanation:** An FIR is a first-hand account of a crime that is reported to the police. It is usually written by the investigating officer and contains details of the crime, the parties involved, and any other relevant information. The FIR serves as a formal complaint and is the starting point for the police investigation into the crime.
+
+**Related Topics:** Crime, Police Procedure, Investigation, Evidence Collection
+
+**Legal Category Classification:** Criminal Law
+
+**Disclaimer:** This is not legal advice. Please consult a qualified legal professional for specific legal matters.
+
+This is not legal advice. Please consult a qualified legal professional for specific legal matters.",First Information Report (FIR) is a written document prepared by police when they receive information about a cognizable offense.,0.46427375078201294,0.05461943055680819,0.14942528735632185,0.0813953488372093,0.13793103448275865,0.0,0.6111111111111112,0,0,0.9,0.8,0.85,0.8485280871391296,0.8144741654396057,0.8855539560317993
+What is the process of divorce under Hindu Law?,"**Direct Answer:**
+Under Hindu Law, the process of divorce is governed by the Hindu Marriage Act, 1955. The Act provides for two types of divorce: divorce by mutual consent and divorce by petition.
+
+**Relevant Legal Provisions/Sections:**
+Section 13 of the Hindu Marriage Act, 1955, provides for the grounds for divorce by mutual consent, while Section 13(1) of the Act provides for the grounds for divorce by petition.
+
+**Simple Explanation:**
+A divorce under Hindu Law can be obtained through mutual consent, where both spouses agree to end their marriage, or through a petition, where one spouse seeks a divorce citing specific grounds such as adultery, cruelty, or desertion.
+
+**Related Topics for Further Exploration:**
+
+* Grounds for divorce under Hindu Law
+* Procedure for filing a divorce petition
+* Maintenance and alimony under Hindu Law
+* Hindu Succession Act and its implications on divorce
+
+**Legal Category Classification:** Family Law","Under Hindu Marriage Act, divorce can be filed on grounds like cruelty, desertion, adultery, mutual consent, etc.",0.8593968152999878,0.03336134820125146,0.19178082191780824,0.06944444444444445,0.136986301369863,0.0,0.7647058823529411,0,0,0.9,0.8,0.85,0.8805509209632874,0.845782458782196,0.9183005094528198
+What are fundamental rights in India?,"**Direct Answer:**
+The fundamental rights in India are enshrined in Part III of the Indian Constitution, specifically in Articles 12 to 35. These rights are guaranteed to every citizen of India and are considered the basic human rights.
+
+**Relevant Legal Provisions:**
+Article 12, Article 13, Article 14, Article 19, Article 20, Article 21, Article 22, Article 23, Article 24, Article 25, Article 26, Article 27, Article 28, Article 29, Article 30, Article 31, Article 32, Article 33, Article 34, Article 35
+
+**Simple Explanation:**
+These fundamental rights include freedoms such as speech, expression, and assembly, as well as the right to equality, life, and liberty. They also include the right to freedom from exploitation, forced labor, and discrimination. These rights are essential to ensure that every individual in India has a fair and just society to live in.
+
+**Related Topics for Further Exploration:**
+
+* Right to Education (Article 21A)
+* Right to Equality (Article 14)
+* Right to Freedom (Article 19)
+* Right to Life and Personal Liberty (Article 21)
+* Right Against Exploitation (Article 23)
+* Right to Freedom of Religion (Article 25-28)
+
+**Legal Category Classification:** Constitutional Law
+
+**Disclaimer:**
+This is not legal advice. Please consult a qualified legal professional for specific legal matters.","Fundamental rights in India include equality, freedom, right against exploitation, freedom of religion, cultural and educational rights, and constitutional remedies.",0.7748918533325195,0.0,0.16748768472906403,0.06965174129353234,0.13793103448275862,0.0,0.5263157894736842,0,0,0.9,0.8,0.85,0.8457360863685608,0.7991272807121277,0.8981183767318726
+What is IPC section 375?,"**Direct Answer:**
+IPC section 375 defines the offense of rape as: ""A man is said to commit ""rape"" if he has sexual intercourse with a woman against her will without her consent, or with her consent if the consent has been obtained by coercion, or by misrepresenting the nature of the act, or by forcing or seducing her to sexual intercourse without her consent.""
+
+**Relevant Legal Provisions/Sections:**
+Indian Penal Code (IPC), Section 375
+
+**Simple Explanation:**
+In simple terms, section 375 of the Indian Penal Code criminalizes sexual intercourse without the consent of the woman. It also includes cases where the woman is forced or coerced into sexual intercourse, or where the perpetrator misrepresents the nature of the act or uses false promises to obtain consent.
+
+**Related Topics for Further Exploration:**
+* Consent and sexual assault
+* Sexual harassment and workplace laws
+* Domestic violence and abuse
+* Gender-based violence and laws
+
+**Legal Category Classification:**
+Criminal Law
+
+**Disclaimer:**
+This is not legal advice. Please consult a qualified legal professional for specific legal matters.",Section 375 of the IPC defines rape and outlines specific acts that constitute the offense.,0.3120300769805908,0.0,0.13095238095238093,0.04819277108433735,0.08333333333333333,0.0,0.6428571428571429,0,0,0.9,0.8,0.85,0.8505555391311646,0.8041360378265381,0.9026625156402588
+What is judicial custody?,"**Direct Answer:**
+According to the Indian legal system, judicial custody refers to the detention of an accused person in a jail or a correctional facility, as ordered by a court of law, pending the trial or hearing of their case.
+
+**Relevant Legal Provisions/Sections:**
+Section 56 of the Code of Criminal Procedure, 1973 (CrPC) and Section 167 of the CrPC.
+
+**Simple Explanation:**
+Judicial custody means that a person accused of a crime is taken into custody by the police and then surrendered to the court, where they will remain until their case is heard and decided. During this period, they are not considered to be in police custody, but rather in the custody of the court, and are entitled to certain rights and protections under the law.
+
+**Related Topics for Further Exploration:**
+Arrest, Bail, Police Custody, Judicial Remand, Pre-trial Detention.
+
+**Legal Category Classification:**
+Criminal Law","Judicial custody means the accused is kept in jail under the court's order, not under police interrogation.",0.7616429328918457,0.0,0.1756756756756757,0.0547945205479452,0.14864864864864863,0.0,0.7333333333333333,0,0,1.0,1.0,0.9,0.8584434390068054,0.825674295425415,0.8939211368560791
+What is a police remand?,"**Direct Answer:**
+A police remand, also known as police custody, is a temporary detention of a suspect by the police for a specified period, usually 24 to 48 hours, to investigate a crime.
+
+**Relevant Legal Provisions/Sections:**
+Section 167 (1) of the Code of Criminal Procedure, 1973
+
+**Simple Explanation:**
+When a person is suspected of committing a crime, the police can take them into custody and interrogate them to gather more information. During this time, the suspect is not formally charged with a crime, but rather is held for a limited period to aid in the investigation. This is known as a police remand.
+
+**Related Topics for Further Exploration:**
+
+* Police powers and procedures
+* Arrest and detention laws
+* Investigation techniques
+* Rights of an arrested person
+
+**Legal Category Classification:** Criminal Law
+
+**Standard Disclaimer:**
+This is not legal advice. Please consult a qualified legal professional for specific legal matters.",Police remand refers to the detention of an accused in police custody for investigation purposes after arrest and court approval.,0.7613241672515869,0.0,0.18918918918918917,0.0684931506849315,0.14864864864864866,0.0,0.55,0,0,0.9,0.8,0.85,0.8614095449447632,0.8257707357406616,0.900263249874115
+What is a bail bond?,"**Direct Answer:**
+
+A bail bond is a financial guarantee that ensures an accused person's appearance in court. It is typically provided by a bail bond agent or a surety company and is used to secure the release of a defendant from custody while they await trial or sentencing.
+
+**Relevant Legal Provisions/Sections:**
+
+* Federal Rule of Criminal Procedure 46(a)(1): ""Bail shall be set by the judicial officer with due regard to the principles of this section.""
+* 18 U.S.C. § 3142(f): ""The judicial officer may fix the amount of the bail or other conditions of release at the time of the initial appearance.""
+
+**Simple Explanation:**
+
+Imagine you're arrested and taken to jail. To get out, you need to provide a guarantee that you'll show up for your court dates. A bail bond is like a promise that says, ""I'll be there, or someone else will pay the price."" This allows you to be released from jail pending trial, but you'll need to follow specific rules and appear in court as scheduled.
+
+**Related Topics for Further Exploration:**
+
+* Pre-trial release
+* Conditions of release
+* Bail reform
+* Criminal procedure
+
+**Legal Category Classification:**
+
+Criminal Law
+
+**Disclaimer:**
+
+This is not legal advice. Please consult a qualified legal professional for specific legal matters.","A bail bond is a written promise, often with a monetary guarantee, that the accused will appear in court when required.",0.722205638885498,0.024698704671871394,0.14678899082568805,0.06481481481481481,0.11926605504587157,0.0,0.65,0,0,0.9,0.8,0.7,0.8623232841491699,0.8149798512458801,0.9155063629150391
+What is IPC section 498A?,"**Direct Answer:**
+IPC section 498A is a criminal provision in the Indian Penal Code, 1860, which deals with the offence of dowry harassment. It states that whoever, being the husband or relative of the husband of a married woman, subjects such woman to cruelty, shall be punished with imprisonment for a term which may extend to three years and also be liable to fine.
+
+**Relevant Legal Provisions or Sections:**
+Indian Penal Code, 1860, Section 498A
+
+**Simple Explanation:**
+In simple terms, IPC section 498A criminalizes the act of subjecting a married woman to cruelty by her husband or his relatives, usually with the intention of extracting dowry or other benefits. This provision aims to protect married women from harassment and abuse.
+
+**Related Topics for Further Exploration:**
+* Dowry deaths and dowry-related crimes
+* Domestic violence and its legal implications
+* Women's rights and gender-based violence
+
+**Legal Category Classification:**
+Criminal Law
+
+**Disclaimer:**
+This response is based on the legal documents and is intended to provide general information only. The legal interpretation and application of IPC section 498A may vary depending on the specific circumstances of each case. This is not legal advice. Please consult a qualified legal professional for specific legal matters.
+
+This is not legal advice. Please consult a qualified legal professional for specific legal matters.","Section 498A deals with cruelty by husband or his relatives against a woman, often used in dowry harassment cases.",0.5446639060974121,0.019021742645745302,0.1388888888888889,0.06542056074766354,0.11111111111111112,0.0,0.7368421052631579,0,0,0.9,0.8,0.85,0.8535705804824829,0.8067045211791992,0.9062178730964661
+What is Section 304B?,"Here's the response:
+
+**Direct answer:**
+Section 304B of the Indian Penal Code (IPC) deals with the offense of causing death by rash and negligent act.
+
+**Relevant legal provisions:**
+Section 304B, Indian Penal Code (IPC)
+
+**Simple explanation:**
+This section of the Indian Penal Code states that if someone causes the death of another person by performing a rash and negligent act, they can be punished with imprisonment for a term that may extend up to two years, or with a fine, or with both.
+
+**Related topics for further exploration:**
+1. Indian Penal Code (IPC)
+2. Criminal Law
+3. Homicide
+4. Negligence
+5. Rash and negligent act
+
+**Legal category classification:**
+Criminal Law
+
+**Standard disclaimer:**
+This is not legal advice. Please consult a qualified legal professional for specific legal matters.","Section 304B of IPC deals with dowry death, where a woman dies due to harassment or cruelty soon after marriage.",0.1907002329826355,0.0,0.15267175572519084,0.062015503875968984,0.15267175572519084,0.0,0.4,0,0,0.8,0.9,0.7,0.838072657585144,0.8087853789329529,0.8695606589317322
+What is contempt petition?,"**Direct Answer:**
+A contempt petition is a legal proceeding initiated by a court or a party to a legal dispute to address a perceived contemptuous behavior or disobedience of a court order, law, or rule.
+
+**Relevant Legal Provisions/Sections:**
+Section 12 to 15 of the Contempt of Courts Act, 1971 (India)
+
+**Explanation in Simple Terms:**
+Contempt of court is when someone disrespects or disregards a court's authority, order, or law. A contempt petition is a way for a court or a party to address this behavior. This can include ignoring a court order, making false statements about a judge, or disrupting a court proceeding.
+
+**Related Topics for Further Exploration:**
+
+* Types of contempt: criminal contempt and civil contempt
+* Consequences of contempt
+* Procedure for filing a contempt petition
+* Key cases on contempt of court
+
+**Legal Category Classification:** Criminal Law
+
+**Disclaimer:**
+This is not legal advice. Please consult a qualified legal professional for specific legal matters.",A contempt petition is filed when a person or party disobeys or shows disrespect to a court order.,0.7917354106903076,0.026830946345032934,0.1699346405228758,0.07947019867549669,0.1568627450980392,0.0,0.625,0,0,0.9,0.8,0.85,0.8760196566581726,0.8391680121421814,0.9162566065788269
+What is the process of divorce under Hindu Law?,"**Direct Answer:**
+Under Hindu Law, the process of divorce is governed by the Hindu Marriage Act, 1955. The law provides for two types of divorce: divorce by mutual consent and divorce by petition.
+
+**Relevant Legal Provisions:**
+Section 13 of the Hindu Marriage Act, 1955 provides for divorce by mutual consent, while Section 10 provides for divorce by petition.
+
+**Simple Explanation:**
+A Hindu couple can file for divorce through mutual consent, which requires a joint petition by both spouses, stating that they have been living separately for at least one year and have resolved any disputes. Alternatively, one spouse can file a petition for divorce, citing grounds such as adultery, cruelty, or desertion.
+
+**Related Topics for Further Exploration:**
+
+* Grounds for divorce under Hindu Law
+* Procedure for filing a divorce petition
+* Role of mediation in Hindu divorce proceedings
+* Impact of divorce on property rights under Hindu Law
+
+**Legal Category Classification:** Family Law","Under Hindu Marriage Act, divorce can be filed on grounds like cruelty, desertion, adultery, mutual consent, etc.",0.8455356359481812,0.030910936511813526,0.17105263157894735,0.05333333333333334,0.11842105263157894,0.0,0.7058823529411765,0,0,0.9,0.8,0.7,0.881165623664856,0.8461772799491882,0.9191721677780151
+What is right to information?,"**Direct Answer:**
+The Right to Information (RTI) is a fundamental right that grants citizens the ability to access and obtain information held by public authorities, including government departments, institutions, and agencies. This right is enshrined in various national and international laws.
+
+**Relevant Legal Provisions/Sections:**
+The Right to Information Act, 2005 (India), Section 2(j) defines the term ""information"" as ""any material in any form, including records, documents, memos, e-mails, opinions, advices, press releases, circulars, orders, logbooks, contracts, reports, papers, files, agendas of meetings, papers and notes, etc., and any other document made by a public authority, official, subordinate or agent of a public authority in the course of their duty, as well as any other material which is held by a public authority and under the control of that authority, but does not include the material which is exempt under section 8 of the Act.""
+
+**Simple Explanation:**
+In simple terms, the Right to Information allows citizens to request information from government agencies and institutions, which must provide the information unless it is exempted under specific circumstances. This right helps ensure transparency, accountability, and good governance by promoting public participation and scrutiny of government activities.
+
+**Related Topics for Further Exploration:**
+1. Freedom of Information Act (FOIA) in the United States
+2. Data Protection Acts in various countries
+3. Open Government Partnership (OGP)
+4. Transparency and Accountability in Government
+
+**Legal Category Classification:** Constitutional Law
+
+**Standard Disclaimer:**
+This response is based on legal documents and is intended to provide general information. For specific legal matters, please consult a qualified legal professional.","The Right to Information (RTI) allows citizens to request information from public authorities, promoting transparency and accountability.",0.6959309577941895,0.03938890272683845,0.13127413127413126,0.09338521400778209,0.11583011583011583,0.0,0.875,0,0,0.9,0.8,0.85,0.8692375421524048,0.8072711825370789,0.941507875919342
+What is section 144 of CrPC?,"**Direct Answer:**
+Section 144 of the Criminal Procedure Code (CrPC) is a provision that empowers a magistrate to issue an order to prevent the obstruction of public peace or to prevent the commission of any cognizable offense. This section allows the magistrate to take steps to maintain public order and prevent any potential disturbance of the peace.
+
+**Relevant Legal Provisions:**
+Section 144, Criminal Procedure Code (CrPC)
+
+**Simple Explanation:**
+In simple terms, Section 144 allows a magistrate to issue orders to prevent any action that could disturb public peace or cause harm to people. This section is often used to prevent public gatherings, processions, or other events that could potentially cause unrest or danger to the public.
+
+**Related Topics for Further Exploration:**
+* Public Order Maintenance
+* Peaceful Assembly and Protests
+* Police Powers and Responsibilities
+* Human Rights and Public Order
+
+**Legal Category Classification:**
+Criminal Law
+
+**Disclaimer:**
+This is not legal advice. Please consult a qualified legal professional for specific legal matters.",Section 144 of the Criminal Procedure Code authorizes authorities to prohibit assembly of more than four people in an area to prevent unrest.,0.6952710747718811,0.04381650281053984,0.19393939393939397,0.08588957055214723,0.15757575757575756,0.0,0.47619047619047616,0,0,0.9,0.8,0.85,0.8636350631713867,0.8265916705131531,0.9041545391082764
+What is defamation?,"**Direct Answer:**
+
+Defamation is the communication of a false statement that damages someone's reputation. According to the common law, defamation can take the form of either libel (written statements) or slander (spoken statements).
+
+**Relevant Legal Provisions/Sections:**
+
+* Section 27 of the Defamation Act 2013 (UK): ""Meaning of defamatory statement""
+* Section 43 of the Civil Liability Act 1964 (Australia): ""Defamation and publication by broadcast""
+
+**Simple Explanation:**
+
+Defamation occurs when someone makes a false and damaging statement about another person, which can be written (like a newspaper article or social media post) or spoken (like gossip or rumors). This can harm the person's reputation, cause them emotional distress, and even result in financial losses. Defamation is considered a tort, which means it is a civil wrong that can be addressed through legal action.
+
+**Related Topics for Further Exploration:**
+
+* Libel vs. Slander
+* Public Figure Exception
+* Privilege Defenses
+* Defamation Damages
+* Anti-SLAPP Laws
+
+**Legal Category Classification:**
+
+* Civil Law
+
+**Disclaimer:**
+
+This is not legal advice. Please consult a qualified legal professional for specific legal matters.",Defamation is an act of harming a person's reputation through false statements. It can be civil or criminal under IPC 499 and 500.,0.7458286285400391,0.0,0.18994413407821228,0.04519774011299436,0.13407821229050282,0.0,0.5217391304347826,0,0,0.9,0.8,0.85,0.8528344631195068,0.8201393485069275,0.8882445693016052
+What is custodial interrogation?,"**Direct Answer:**
+Custodial interrogation refers to the questioning of a suspect by law enforcement officials while the suspect is in custody, typically at a police station or other secured facility.
+
+**Relevant Legal Provisions:**
+Miranda v. Arizona (1966) 384 U.S. 436 (specifically, the Miranda warning)
+
+**Simple Explanation:**
+During a custodial interrogation, the suspect is not free to leave, and the questioning is often done in a controlled environment. This raises concerns about the suspect's ability to make informed decisions and the potential for coercion. As a result, law enforcement must provide the suspect with warnings, known as the Miranda warning, before questioning begins.
+
+**Related Topics for Further Exploration:**
+
+* Miranda rights
+* Voluntariness of confessions
+* Police interrogation techniques
+* Fourth Amendment protections
+
+**Legal Category Classification:**
+Criminal Law
+
+**Disclaimer:**
+This is not legal advice. Please consult a qualified legal professional for specific legal matters.",Custodial interrogation refers to questioning a person in police or judicial custody to gather case related information.,0.7301543951034546,0.020442388020959153,0.15492957746478875,0.04285714285714285,0.14084507042253522,0.0,0.5625,0,0,0.9,0.8,0.85,0.8579586148262024,0.8219557404518127,0.8972599506378174
+What is a revision petition?,"**Direct Answer:**
+A revision petition is a type of petition filed in a court of law to rectify an error or mistake in a judgment or order made by the court. It is a mechanism to challenge a judgment or order that was passed without jurisdiction, or where there was a fundamental error or irregularity in the procedure followed.
+
+**Relevant Legal Provisions/Sections:**
+Section 114 and Section 115 of the Code of Civil Procedure, 1908 (CPC) deal with revision petitions. Section 115 allows for the revision of a decree or final order passed by a subordinate court, while Section 114 allows for the revision of an interlocutory order.
+
+**Simple Explanation:**
+Imagine you lost a lawsuit and are unhappy with the decision. However, you believe that the court made a mistake or didn't follow the proper procedures. A revision petition is a way to ask the higher court to review the decision and correct the error.
+
+**Related Topics for Further Exploration:**
+* Appeal vs. Revision: Understanding the differences between these two concepts
+* Jurisdiction: Importance of court jurisdiction in revision petitions
+* Error or Irregularity: Types of errors or irregularities that can be challenged through a revision petition
+
+**Legal Category Classification:**
+Civil Law
+
+**Disclaimer:**
+This is not legal advice. Please consult a qualified legal professional for specific legal matters.",A revision petition challenges the legality or propriety of a lower court’s decision in a higher court.,0.8019302487373352,0.0,0.11981566820276499,0.046511627906976744,0.1105990783410138,0.0,0.6875,0,0,0.9,0.8,0.85,0.8465745449066162,0.8139567375183105,0.8819156289100647
+What is a caveat petition?,"Based on retrieved legal documents, here is a comprehensive response to your query:
+
+**Direct Answer:** A caveat petition is a legal document filed in a court of law to prevent a person from making a claim or obtaining a benefit from an estate, property, or assets.
+
+**Relevant Legal Provisions/Sections:** Section 30 of the Administration of Estates Act 1925 (UK) and Section 59 of the Succession Law Reform Act 2009 (NSW, Australia) provide for the filing of caveat petitions.
+
+**Simple Explanation:** Imagine you're the executor of a loved one's will, and someone is trying to claim a share of the estate without following the proper legal procedures. A caveat petition is a way to stop this person from making a claim until the court has a chance to review the situation and ensure that the will is being administered correctly.
+
+**Related Topics for Further Exploration:**
+
+* Caveats in inheritance law
+* Estate administration procedures
+* Will disputes and contested estates
+
+**Legal Category Classification:** Family Law
+
+**Disclaimer:** This is not legal advice. Please consult a qualified legal professional for specific legal matters.",A caveat petition prevents a court from passing an order without giving notice to the caveator.,0.5723812580108643,0.0,0.111731843575419,0.03389830508474576,0.111731843575419,0.0,0.625,0,0,0.9,0.8,0.85,0.8274678587913513,0.8041037321090698,0.8522303104400635
+What is Article 226?,"**Direct Answer:**
+
+Article 226 of the Constitution of India is a provision that deals with the enforcement of Fundamental Rights and the powers of the High Courts.
+
+**Relevant Legal Provisions/Sections:**
+
+* Article 226, Constitution of India
+* Article 32, Constitution of India
+
+**Simple Explanation for Non-Legal Professionals:**
+
+Article 226 grants the High Courts the power to issue writs, such as habeas corpus, mandamus, and certiorari, to enforce the Fundamental Rights enshrined in the Constitution. This provision enables the High Courts to intervene in cases where an individual's Fundamental Rights are being violated or ignored by the government or any other authority.
+
+**Related Topics for Further Exploration:**
+
+* Writ jurisdiction of High Courts
+* Enforcement of Fundamental Rights
+* Separation of Powers
+
+**Legal Category Classification:**
+
+* Constitutional Law
+
+**Standard Disclaimer:**
+
+This is not legal advice. Please consult a qualified legal professional for specific legal matters.",Article 226 empowers High Courts to issue writs for enforcement of legal and fundamental rights.,0.5870559215545654,0.0,0.208955223880597,0.10606060606060608,0.16417910447761194,0.0,0.7333333333333333,0,0,0.9,0.8,0.85,0.8784830570220947,0.841404378414154,0.9189803004264832
+What is Section 66A of IT Act?,"**Direct Answer:**
+Section 66A of the Information Technology Act, 2000 (IT Act) is a now-repealed provision that criminalized the sending of offensive or menacing messages through electronic communication.
+
+**Relevant Legal Provisions or Sections:**
+Section 66A of the Information Technology Act, 2000 (as repealed by the Information Technology (Amendment) Act, 2008)
+
+**Simple Explanation:**
+Section 66A was a controversial provision that made it a punishable offense to send a communication that was ""grossly offensive"" or ""menacing"" through electronic means, such as email, text message, or social media. However, this provision was criticized for its vagueness and potential for abuse, leading to its repeal.
+
+**Related Topics for Further Exploration:**
+1. Cybercrime laws in India
+2. Freedom of speech and expression
+3. Online harassment and bullying
+
+**Legal Category Classification:**
+Criminal Law
+
+**Standard Disclaimer:**
+This is not legal advice. Please consult a qualified legal professional for specific legal matters.",Section 66A criminalized sending offensive messages online but was struck down by Supreme Court in 2015.,0.5281192064285278,0.0,0.14084507042253522,0.014285714285714289,0.11267605633802816,0.0,0.5625,0,0,1.0,1.0,1.0,0.8524714112281799,0.8232626914978027,0.8838290572166443
+What is Article 21 of the Constitution?,"**Direct Answer:**
+Article 21 of the Constitution of India deals with the Protection of Life and Personal Liberty, stating that ""No person shall be deprived of his life or personal liberty except according to procedure established by law"".
+
+**Relevant Legal Provisions/Sections:**
+Article 21, Constitution of India
+
+**Simple Explanation:**
+In simple terms, Article 21 ensures that individuals have the right to life and personal freedom, and any deprivation of these rights can only be done through a legal process. This means that the government or any other authority cannot take away a person's life or freedom without following the established legal procedures.
+
+**Related Topics for Further Exploration:**
+1. Right to Life and Liberty
+2. Due Process of Law
+3. Fundamental Rights in Indian Constitution
+4. Protection of Human Rights
+
+**Legal Category Classification:**
+Constitutional Law
+
+**Disclaimer:**
+This is not legal advice. Please consult a qualified legal professional for specific legal matters.",Article 21 ensures protection of life and personal liberty and cannot be deprived except by law.,0.5017964243888855,0.0,0.21333333333333335,0.12162162162162163,0.17333333333333334,0.0,0.8666666666666667,0,0,0.9,0.8,0.9,0.8730283975601196,0.8372688293457031,0.9119787216186523
+What is Article 21 of the Constitution?,"Here is the response:
+
+**Direct Answer:**
+
+Article 21 of the Constitution of India is a fundamental right that guarantees protection of life and personal liberty to every citizen of India.
+
+**Relevant Legal Provisions:**
+
+Article 21: Protection of life and personal liberty
+
+""No person shall be deprived of his life or personal liberty except according to procedure established by law.""
+
+**Simple Explanation:**
+
+In simple terms, Article 21 ensures that every individual in India has the right to live their life freely and without any interference or violation of their personal liberties. This includes the right to life itself, as well as the right to freedom from arbitrary arrest, detention, or imprisonment.
+
+**Related Topics for Further Exploration:**
+
+* Right to Life (Article 21)
+* Due Process of Law
+* Fundamental Rights under the Indian Constitution
+* Human Rights in India
+
+**Legal Category Classification:**
+
+Constitutional Law
+
+**Standard Disclaimer:**
+
+This is not legal advice. Please consult a qualified legal professional for specific legal matters.",Article 21 ensures protection of life and personal liberty and cannot be deprived except by law.,0.393524169921875,0.04772558521994306,0.1935483870967742,0.11764705882352941,0.18064516129032257,0.0,0.8666666666666667,0,0,0.9,0.8,0.85,0.868904173374176,0.8311936855316162,0.9101990461349487
+What is cyber defamation?,"**Direct Answer:**
+Cyber defamation, also known as online defamation or digital defamation, refers to the publication of false and damaging statements about an individual or entity on the internet. This can include false statements published on social media, blogs, websites, or other online platforms.
+
+**Relevant Legal Provisions/Sections:**
+Section 230(c)(1) of the Communications Decency Act (CDA) (47 U.S.C. § 230(c)(1)) provides immunity to online platforms from liability for third-party content, except in cases of intentional interference with a business relationship or knowing concealment or removal of content.
+
+**Simple Explanation:**
+Cyber defamation is when someone makes false and harmful statements about you or your business online. This can be very damaging and can affect your reputation, business, or personal relationships. Cyber defamation is a form of defamation, just like traditional printed or spoken defamation.
+
+**Related Topics for Further Exploration:**
+1. Defamation law
+2. Online harassment
+3. Reputation management
+4. Internet liability
+5. Digital privacy
+
+**Legal Category Classification:**
+Civil Law
+
+**Disclaimer:**
+This is not legal advice. Please consult a qualified legal professional for specific legal matters.",Cyber defamation is publishing false defamatory content online with the intent to harm someone’s reputation.,0.8370631337165833,0.0,0.1340782122905028,0.022598870056497175,0.08938547486033518,0.0,0.5333333333333333,0,0,0.9,0.8,0.85,0.8480761647224426,0.8052860498428345,0.8956688642501831

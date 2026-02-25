@@ -74,42 +74,54 @@ A research-oriented **Retrieval-Augmented Generation (RAG)** system for the lega
 
 5. **Run the Streamlit UI**
    ```bash
-   streamlit run legal_ui.py
+   streamlit run projects/api_interfaces/ui/legal_ui.py
    ```
 
    The UI will open at `http://localhost:8501`
 
 ## 📁 Project Structure
 
+**Note**: The project has been reorganized! See `PROJECT_STRUCTURE_FINAL.md` for complete details.
+
 ```
 Major project/
-├── legal_ui.py                    # Main Streamlit UI (entry point)
-├── requirements.txt              # Python dependencies
-├── .env.example                  # Environment variables template
-├── README.md                     # This file
+├── projects/                              # All main projects
+│   ├── slm_orchestration_legal_rag/      # Main SLM orchestration project
+│   │   ├── slm_orchestration_app.py       # Main application
+│   │   ├── orchestrators/                # Orchestrator implementations
+│   │   ├── agents/                       # Agent implementations
+│   │   ├── evaluation/                   # Evaluation framework
+│   │   └── chroma_db_consolidated/       # Vector database
+│   │
+│   ├── indian_law_voicebot/              # Voice-based legal assistant
+│   ├── database_builders/                 # Database building scripts
+│   ├── testing_evaluation/                # Test and evaluation scripts
+│   └── api_interfaces/                    # API endpoints and UI
+│       └── ui/
+│           └── legal_ui.py               # Streamlit UI (entry point)
 │
-├── Buddy/
-│   └── agentic_legal_rag/
-│       ├── slm_orchestration_app.py  # Main SLM orchestration application
-│       ├── orchestrators/            # Orchestrator implementations
-│       │   ├── flan_t5_orchestrator.py
-│       │   ├── gpt4_orchestrator.py
-│       │   ├── rule_orchestrator.py
-│       │   └── no_orchestrator.py
-│       ├── agents/                  # Agent implementations
-│       │   ├── booster_agent.py
-│       │   ├── retriever_agent.py
-│       │   ├── answering_agent.py
-│       │   ├── citation_verifier.py
-│       │   └── multilingual_agent.py
-│       ├── agent_adapters.py       # Adapters for agent compatibility
-│       ├── config.py               # Configuration management
-│       └── evaluation/             # Evaluation framework
+├── docs/                                  # All documentation
+│   ├── architecture/                     # Architecture docs
+│   ├── guides/                           # Setup guides
+│   ├── reports/                          # Project reports
+│   └── fixes/                            # Fix documentation
 │
-├── chroma_db_consolidated/       # Vector database (build locally)
-├── indian_legal_db.sqlite        # SQLite database (optional)
-└── logs/                         # System logs
+├── config/                                # Configuration files
+│   ├── config.py
+│   ├── config.env
+│   └── setup_scripts/
+│
+├── utilities/                              # Utility scripts
+├── research/                               # Research materials
+├── logs/                                  # System logs
+├── requirements.txt                       # Python dependencies
+└── README.md                              # This file
 ```
+
+**Quick Access:**
+- **Main Project**: `projects/slm_orchestration_legal_rag/`
+- **UI**: `projects/api_interfaces/ui/legal_ui.py`
+- **Documentation**: `docs/` or `PROJECT_STRUCTURE_FINAL.md`
 
 ## 🎮 Usage
 
@@ -139,7 +151,7 @@ Try these sample queries in the UI:
 
 ```python
 import asyncio
-from Buddy.agentic_legal_rag.slm_orchestration_app import SLMOrchestrationApp
+from projects.slm_orchestration_legal_rag.slm_orchestration_app import SLMOrchestrationApp
 
 async def main():
     # Initialize with Flan-T5 orchestrator
@@ -216,12 +228,12 @@ The system uses ChromaDB for document retrieval. To build your own database:
 1. **Prepare documents**: Place legal documents in a directory
 2. **Run consolidation script** (if you have existing ChromaDB instances):
    ```bash
-   python consolidate_chromadb.py
+   python projects/database_builders/scripts/consolidate_chromadb.py
    ```
 
 3. **Or add documents directly**:
    ```bash
-   python add_docs_to_chromadb.py
+   python projects/database_builders/scripts/add_docs_to_chromadb.py
    ```
 
 ## 🧪 Testing
@@ -230,7 +242,7 @@ Run the evaluation framework:
 
 ```bash
 # Navigate to evaluation directory
-cd Buddy/agentic_legal_rag/evaluation
+cd projects/slm_orchestration_legal_rag/evaluation
 
 # Run orchestration evaluation
 python run_orchestration_evaluation.py
@@ -263,7 +275,7 @@ This will:
 5. **"Streamlit not found"**
    - Solution: Ensure you're in the project root directory and virtual environment is activated
    ```bash
-   streamlit run legal_ui.py
+   streamlit run projects/api_interfaces/ui/legal_ui.py
    ```
 
 ## 📚 Research Applications
@@ -294,7 +306,8 @@ This project is licensed under the MIT License.
 For issues and questions:
 - Create an issue in the repository
 - Check the troubleshooting section above
-- Review the evaluation reports in `Buddy/agentic_legal_rag/evaluation/`
+- Review the evaluation reports in `projects/slm_orchestration_legal_rag/evaluation/`
+- See `PROJECT_STRUCTURE_FINAL.md` for complete project organization
 
 ---
 
