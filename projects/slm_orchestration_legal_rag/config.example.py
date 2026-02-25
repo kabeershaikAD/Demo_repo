@@ -177,3 +177,4 @@ if __name__ == "__main__":
             print(f"  Description: {info['description']}")
             print(f"  How to get: {info['how_to_get']}")
 
+

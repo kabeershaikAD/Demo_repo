@@ -16,3 +16,4 @@ Write-Host "You can now run training with:" -ForegroundColor Yellow
 Write-Host "python training/knowledge_distillation.py --data data/expert_traces/training_data.jsonl --output models/flan_t5_orchestrator --epochs 3 --batch_size 8 --lr 5e-5" -ForegroundColor Cyan
 
 
+

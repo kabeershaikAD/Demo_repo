@@ -281,3 +281,4 @@ Write-Host "Total size: ~308 MB" -ForegroundColor Cyan
 
 **`model.safetensors`** is the file that contains all your training! This 307 MB file has all the learned weights from your 1,200 training examples. The other files are just configuration needed to load and use it.
 
+
