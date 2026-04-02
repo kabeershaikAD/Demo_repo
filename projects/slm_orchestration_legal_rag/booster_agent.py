@@ -558,3 +558,163 @@ JSON:"""
             'avg_processing_time': 0.0
         }
         logger.info("PromptBooster metrics reset")
+
+
+# ---------------------------------------------------------------------------
+# ReAct wrapper  (uses the existing PromptBooster under the hood)
+# ---------------------------------------------------------------------------
+
+import json as _json
+from core.tools import Tool, ToolRegistry
+from core.base_react_agent import BaseReActAgent, AgentResult, groq_chat
+
+_BOOSTER_SYSTEM = (
+    "You are a Legal Query Enhancement Agent in an Indian legal RAG system. "
+    "Your job is to analyze the user's legal query and decide whether it "
+    "needs to be expanded, clarified, or left as-is for document retrieval.\n"
+    "You should enhance vague or short queries with proper Indian legal "
+    "terminology (IPC sections, CrPC, Constitution articles, Act names)."
+)
+
+
+class BoosterReActAgent(BaseReActAgent):
+    """ReAct agent that wraps the existing PromptBooster capabilities."""
+
+    def __init__(self, booster: "PromptBooster"):
+        tools = ToolRegistry()
+        super().__init__(
+            name="BoosterAgent",
+            system_prompt=_BOOSTER_SYSTEM,
+            tools=tools,
+            max_steps=2,
+            direct_tool_execution=True,
+        )
+        self._booster = booster
+        self._register_tools()
+
+    # -- tools --------------------------------------------------------------
+
+    def _register_tools(self):
+        self.tools.register(Tool(
+            name="analyze_intent",
+            description=(
+                "Analyze a legal query to determine its intent, complexity, "
+                "and whether it needs enhancement. Returns intent type and "
+                "whether boosting is needed."
+            ),
+            parameters={"query": "str"},
+            func=self._tool_analyze_intent,
+        ))
+        self.tools.register(Tool(
+            name="expand_legal_terms",
+            description=(
+                "Expand abbreviations, slang, or vague terms in the query "
+                "into proper Indian legal terminology (IPC sections, Acts, "
+                "Constitution articles)."
+            ),
+            parameters={"query": "str"},
+            func=self._tool_expand_legal_terms,
+        ))
+        self.tools.register(Tool(
+            name="rephrase_for_search",
+            description=(
+                "Rewrite the query into an optimized search query for the "
+                "legal document vector database. Adds relevant legal context."
+            ),
+            parameters={"query": "str", "intent": "str"},
+            func=self._tool_rephrase_for_search,
+        ))
+
+    async def _tool_analyze_intent(self, query: str = "", **kw) -> str:
+        q = query.lower()
+        words = query.split()
+        n = len(words)
+        is_vague = n <= 4
+        has_legal = any(t in q for t in [
+            "section", "article", "ipc", "crpc", "constitution", "act",
+        ])
+        comparators = ["compare", "difference", "vs", "versus", "distinguish"]
+        procedural = ["how to", "procedure", "steps", "process"]
+        analytical = ["analyze", "implications", "impact", "evaluate"]
+        if any(w in q for w in comparators):
+            intent = "comparative"
+        elif any(p in q for p in procedural):
+            intent = "procedural"
+        elif any(a in q for a in analytical):
+            intent = "analytical"
+        else:
+            intent = "factual"
+        needs_boost = is_vague or (not has_legal and n <= 6)
+        return _json.dumps({
+            "intent": intent,
+            "word_count": n,
+            "is_vague": is_vague,
+            "has_legal_terms": has_legal,
+            "needs_boost": needs_boost,
+        })
+
+    async def _tool_expand_legal_terms(self, query: str = "", **kw) -> str:
+        boosted = self._booster._create_boosted_query(query)
+        mode = self._booster._determine_retrieval_mode(query.lower())
+        top_k = self._booster._determine_top_k(query.lower())
+        return _json.dumps({
+            "expanded_query": boosted,
+            "retrieval_mode": mode,
+            "top_k": top_k,
+        })
+
+    async def _tool_rephrase_for_search(
+        self, query: str = "", intent: str = "factual", **kw
+    ) -> str:
+        prompt = (
+            f"Rewrite this legal query for optimal vector-database search. "
+            f"Add relevant Indian legal terms (IPC sections, Act names, "
+            f"Constitution articles) where appropriate.\n"
+            f"Intent: {intent}\n"
+            f"Original query: {query}\n"
+            f"Rewritten query:"
+        )
+        rewritten = await groq_chat(
+            "You rewrite legal queries for search. Output ONLY the rewritten query, nothing else.",
+            prompt,
+        )
+        return _json.dumps({"rephrased_query": rewritten or query})
+
+    # -- hooks --------------------------------------------------------------
+
+    def _build_task_prompt(self, context):
+        query = context.get("query", "")
+        return (
+            f"Analyze and optionally enhance this legal query for document "
+            f"retrieval: \"{query}\"\n"
+            f"If the query is clear and specific, you can finish immediately. "
+            f"If it is vague or short, use your tools to expand it."
+        )
+
+    def _extract_final_output(self, answer_text, context):
+        query = context.get("query", "")
+        try:
+            data = _json.loads(answer_text)
+        except _json.JSONDecodeError:
+            data = {}
+        boosted = data.get("enhanced_query", data.get("boosted_query", query))
+        if not boosted or boosted == query:
+            boosted = query
+        return {
+            "boosted_query": boosted,
+            "retrieval_mode": data.get("retrieval_mode", "both"),
+            "top_k": data.get("top_k", 5),
+            "confidence": data.get("confidence", 0.7),
+            "reasoning": data.get("reasoning", "Enhanced by ReAct agent"),
+        }
+
+    def _fallback(self, context):
+        query = context.get("query", "")
+        decision = self._booster.generate_decision(query)
+        return {
+            "boosted_query": decision.boosted_query or query,
+            "retrieval_mode": decision.retrieval_mode,
+            "top_k": decision.top_k,
+            "confidence": decision.confidence,
+            "reasoning": "Rule-based fallback",
+        }

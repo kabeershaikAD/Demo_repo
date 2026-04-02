@@ -9,16 +9,24 @@ from typing import List, Dict, Any, Optional
 from dataclasses import dataclass
 try:
     import numpy as np
+    NUMPY_AVAILABLE = True
+except ImportError:
+    NUMPY_AVAILABLE = False
+    np = None
+
+try:
     from sentence_transformers import SentenceTransformer, util
-    from langchain_openai import OpenAIEmbeddings
     SENTENCE_TRANSFORMERS_AVAILABLE = True
-    OPENAI_AVAILABLE = True
 except ImportError:
     SENTENCE_TRANSFORMERS_AVAILABLE = False
-    OPENAI_AVAILABLE = False
-    np = None
     SentenceTransformer = None
     util = None
+
+try:
+    from langchain_openai import OpenAIEmbeddings
+    OPENAI_AVAILABLE = True
+except ImportError:
+    OPENAI_AVAILABLE = False
     OpenAIEmbeddings = None
 
 from config import config
@@ -42,26 +50,29 @@ class CitationVerifier:
     """Verifies claims against retrieved documents"""
     
     def __init__(self):
-        if OPENAI_AVAILABLE:
+        self.embedding_model = None
+        # Prefer local SentenceTransformer (free, no API) over OpenAI
+        if SENTENCE_TRANSFORMERS_AVAILABLE:
+            try:
+                model_name = getattr(config.model, "CITATION_VERIFICATION_MODEL",
+                                     config.model.EMBEDDING_MODEL_NAME)
+                self.embedding_model = SentenceTransformer(model_name)
+                logger.info(f"Using local SentenceTransformer ({model_name}) for citation verification - no API cost")
+            except Exception as e:
+                logger.warning(f"Could not load SentenceTransformer: {e}")
+
+        if self.embedding_model is None and OPENAI_AVAILABLE:
             try:
                 self.embedding_model = OpenAIEmbeddings(
                     model="text-embedding-3-small",
-                    openai_api_key=config.api.OPENAI_API_KEY
+                    openai_api_key=config.api.OPENAI_API_KEY,
                 )
-                logger.info("Using OpenAI embeddings for citation verification")
+                logger.info("Using OpenAI embeddings for citation verification (fallback)")
             except Exception as e:
                 logger.warning(f"Could not load OpenAI embedding model: {e}")
-                self.embedding_model = None
-        elif SENTENCE_TRANSFORMERS_AVAILABLE:
-            try:
-                self.embedding_model = SentenceTransformer(config.model.EMBEDDING_MODEL_NAME)
-                logger.info("Using SentenceTransformer embeddings for citation verification")
-            except Exception as e:
-                logger.warning(f"Could not load embedding model: {e}")
-                self.embedding_model = None
-        else:
-            self.embedding_model = None
-            logger.warning("No embedding models available. Using fallback verification.")
+
+        if self.embedding_model is None:
+            logger.warning("No embedding models available. Using keyword-only verification.")
         
         self.similarity_threshold = config.retrieval.CITATION_THRESHOLD
         
@@ -76,7 +87,18 @@ class CitationVerifier:
         }
         
         logger.info("CitationVerifier initialized")
-    
+
+    def _normalize_doc(self, doc: Any, index: int) -> Dict[str, Any]:
+        """Ensure each doc is a dict with content and doc_id (handle str or object)."""
+        if isinstance(doc, dict):
+            return dict(doc)
+        if isinstance(doc, str):
+            return {"content": doc, "doc_id": f"doc_{index}", "title": ""}
+        if hasattr(doc, "__dict__"):
+            d = getattr(doc, "__dict__", {})
+            return {"content": d.get("content", ""), "doc_id": d.get("doc_id", f"doc_{index}"), "title": d.get("title", "")}
+        return {"content": str(doc), "doc_id": f"doc_{index}", "title": ""}
+
     def verify(self, claims: List[Dict[str, Any]], retrieved_docs: List[Dict[str, Any]]) -> List[Dict[str, Any]]:
         """
         Verify claims against retrieved documents
@@ -90,6 +112,7 @@ class CitationVerifier:
         """
         import time
         start_time = time.time()
+        retrieved_docs = [self._normalize_doc(d, i) for i, d in enumerate(retrieved_docs or [])]
         
         # Handle case where claims is empty but we have documents
         if not claims:
@@ -462,4 +485,194 @@ class CitationVerifier:
             'similarity_score': 0.0,
             'supporting_docs': [],
             'verification_method': 'error'
+        }
+
+
+
+# ---------------------------------------------------------------------------
+# ReAct wrapper  (uses the existing CitationVerifier under the hood)
+# ---------------------------------------------------------------------------
+
+import json as _json
+from core.tools import Tool, ToolRegistry
+from core.base_react_agent import BaseReActAgent, AgentResult, groq_chat
+
+_VERIFIER_SYSTEM = (
+    "You are a Legal Citation Verification Agent. Your job is to verify "
+    "that each claim in a legal answer is supported by the retrieved "
+    "source documents.\n"
+    "You should check each claim, find supporting evidence, and flag "
+    "any unsupported or inaccurate claims."
+)
+
+
+class VerifierReActAgent(BaseReActAgent):
+    """ReAct agent that wraps the existing CitationVerifier capabilities."""
+
+    def __init__(self, verifier: "CitationVerifier"):
+        tools = ToolRegistry()
+        super().__init__(
+            name="VerifierAgent",
+            system_prompt=_VERIFIER_SYSTEM,
+            tools=tools,
+            max_steps=2,
+            direct_tool_execution=True,
+        )
+        self._verifier = verifier
+        self._verification_results = []
+        self._register_tools()
+
+    def _register_tools(self):
+        self.tools.register(Tool(
+            name="verify_claims",
+            description=(
+                "Verify all claims in the answer against retrieved documents "
+                "using semantic similarity. Returns per-claim verification."
+            ),
+            parameters={"claims": "list of claim dicts", "documents": "list of doc dicts"},
+            func=self._tool_verify,
+        ))
+        self.tools.register(Tool(
+            name="find_evidence",
+            description=(
+                "Search the retrieved documents for text that supports or "
+                "contradicts a specific claim."
+            ),
+            parameters={"claim_text": "str"},
+            func=self._tool_find_evidence,
+        ))
+        self.tools.register(Tool(
+            name="flag_issues",
+            description=(
+                "Summarize verification issues and produce a final "
+                "verification score and report."
+            ),
+            parameters={},
+            func=self._tool_flag_issues,
+        ))
+
+    async def _tool_verify(self, claims=None, documents=None, **kw) -> str:
+        if claims is None:
+            claims = self._context_claims
+        if documents is None:
+            documents = self._context_docs
+        normalized_docs = [
+            self._verifier._normalize_doc(d, i)
+            for i, d in enumerate(documents)
+        ]
+        if not claims:
+            return _json.dumps({"verified": 0, "total": 0, "message": "No claims to verify"})
+        results = self._verifier.verify(claims, normalized_docs)
+        self._verification_results = results if isinstance(results, list) else []
+        supported = sum(1 for r in self._verification_results if isinstance(r, dict) and r.get("supported"))
+        return _json.dumps({
+            "verified": supported,
+            "total": len(self._verification_results),
+            "details": [
+                {
+                    "supported": r.get("supported", False),
+                    "confidence": round(r.get("confidence", 0), 3),
+                }
+                for r in self._verification_results[:5]
+                if isinstance(r, dict)
+            ],
+        })
+
+    async def _tool_find_evidence(self, claim_text: str = "", **kw) -> str:
+        docs = self._context_docs
+        if not docs:
+            return "No documents available to search."
+        evidence_snippets = []
+        claim_lower = claim_text.lower()
+        keywords = [w for w in claim_lower.split() if len(w) > 3]
+        for d in docs[:5]:
+            content = (d.get("content", "") or d.get("snippet", "")).lower()
+            matches = sum(1 for kw in keywords if kw in content)
+            if matches >= 2:
+                raw = d.get("content", "") or d.get("snippet", "")
+                evidence_snippets.append({
+                    "doc_id": d.get("doc_id", "?"),
+                    "snippet": raw[:200],
+                    "keyword_matches": matches,
+                })
+        if not evidence_snippets:
+            return "No strong evidence found for this claim."
+        return _json.dumps(evidence_snippets[:3])
+
+    async def _tool_flag_issues(self, **kw) -> str:
+        results = self._verification_results
+        if not results:
+            return _json.dumps({"issues": [], "score": 0.5})
+        issues = []
+        for i, r in enumerate(results):
+            if isinstance(r, dict) and not r.get("supported", False):
+                issues.append(f"Claim {i+1} not supported (confidence {r.get('confidence', 0):.2f})")
+        scores = [r.get("confidence", 0.5) for r in results if isinstance(r, dict)]
+        avg = sum(scores) / len(scores) if scores else 0.5
+        return _json.dumps({"issues": issues, "score": round(avg, 3)})
+
+    # -- hooks --------------------------------------------------------------
+
+    def _build_task_prompt(self, context):
+        answer = context.get("answer", "")
+        claims = context.get("claims", [])
+        docs = context.get("documents", [])
+        self._context_claims = claims
+        self._context_docs = docs
+        claim_count = len(claims) if claims else 0
+        return (
+            f"Verify the claims in this legal answer against {len(docs)} "
+            f"retrieved documents.\n"
+            f"Answer excerpt: \"{answer[:300]}...\"\n"
+            f"Number of claims to verify: {claim_count}\n"
+            f"You MUST use the verify_claims tool first, then give Final Answer."
+        )
+
+    def _extract_final_output(self, answer_text, context):
+        answer = context.get("answer", "")
+        try:
+            data = _json.loads(answer_text)
+            score = data.get("score", data.get("verification_score", 0.5))
+        except _json.JSONDecodeError:
+            score = 0.5
+        results = self._verification_results
+        supported = sum(1 for r in results if isinstance(r, dict) and r.get("supported"))
+        return {
+            "verified_answer": answer,
+            "verification_score": score,
+            "claims_verified": supported,
+            "total_claims": len(results),
+            "issues": [],
+            "confidence": score,
+        }
+
+    def _fallback(self, context):
+        answer = context.get("answer", "")
+        claims = context.get("claims", [])
+        docs = context.get("documents", [])
+        normalized_docs = [
+            self._verifier._normalize_doc(d, i)
+            for i, d in enumerate(docs)
+        ]
+        try:
+            results = self._verifier.verify(claims, normalized_docs)
+            if isinstance(results, list) and results:
+                scores = [r.get("confidence", 0.5) for r in results if isinstance(r, dict)]
+                score = sum(scores) / len(scores) if scores else 0.5
+                supported = sum(1 for r in results if isinstance(r, dict) and r.get("supported"))
+            else:
+                score = 0.5
+                supported = 0
+                results = []
+        except Exception:
+            score = 0.5
+            supported = 0
+            results = []
+        return {
+            "verified_answer": answer,
+            "verification_score": score,
+            "claims_verified": supported,
+            "total_claims": len(results),
+            "issues": [],
+            "confidence": score,
         }

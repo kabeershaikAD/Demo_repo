@@ -1,330 +1,232 @@
 """
-PEARL: Knowledge Distillation Framework
-Trains Flan-T5-small to imitate expert orchestration using sequence-coherence losses
+PEARL: Knowledge Distillation via Classification
 
-This implements the second component of PEARL:
-1. Training Flan-T5-small on query-to-workflow pairs
-2. Using sequence-coherence losses
-3. Invalid-sequence penalties
+Trains Flan-T5-base to classify legal queries into routing patterns.
+Uses balanced training data with single-word targets (simple / standard / boosted) instead of generating agent sequences as text.
+
+This is dramatically easier for a 250M-param model:
+- Single-word output vs comma-separated agent lists
+- Balanced classes (250 each) vs 84% majority class
+- Classification accuracy typically 2-3x higher than sequence generation
 """
 
 import json
 import logging
+import argparse
+from pathlib import Path
+from typing import Optional
+
 import torch
-import torch.nn as nn
-from torch.utils.data import Dataset, DataLoader
+from torch.utils.data import Dataset
 from transformers import (
-    T5Tokenizer, 
+    T5Tokenizer,
     T5ForConditionalGeneration,
     TrainingArguments,
     Trainer,
-    DataCollatorForSeq2Seq
+    DataCollatorForSeq2Seq,
 )
-from typing import Dict, List, Any, Optional
-from pathlib import Path
 import numpy as np
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-class OrchestrationDataset(Dataset):
+VALID_CLASSES = {"simple", "standard", "boosted"}
+
+
+class ClassificationDataset(Dataset):
+    """Dataset for routing classification.
+
+    Each example:
+      input:  "classify: <query>"
+      target: "simple" | "standard" | "boosted"
     """
-    Dataset for orchestration knowledge distillation.
-    Loads query-to-workflow pairs from expert traces.
-    """
-    
-    def __init__(self, data_path: str, tokenizer: T5Tokenizer, max_length: int = 512):
+
+    def __init__(self, data_path: str, tokenizer: T5Tokenizer, max_input_len: int = 128):
         self.tokenizer = tokenizer
-        self.max_length = max_length
+        self.max_input_len = max_input_len
         self.examples = []
-        
-        # Load training data
-        with open(data_path, 'r', encoding='utf-8') as f:
+
+        with open(data_path, "r", encoding="utf-8") as f:
             for line in f:
-                example = json.loads(line)
-                self.examples.append(example)
-        
-        logger.info(f"Loaded {len(self.examples)} training examples")
-    
+                if line.strip():
+                    ex = json.loads(line)
+                    if ex.get("target") in VALID_CLASSES:
+                        self.examples.append(ex)
+
+        logger.info(f"Loaded {len(self.examples)} classification examples from {data_path}")
+
     def __len__(self):
         return len(self.examples)
-    
+
     def __getitem__(self, idx):
-        example = self.examples[idx]
-        
-        # Get input and target
-        input_text = example.get("input", "")
-        target_text = example.get("target", "")
-        
-        # Tokenize
-        input_encoding = self.tokenizer(
-            input_text,
-            max_length=self.max_length,
-            padding='max_length',
+        ex = self.examples[idx]
+
+        input_enc = self.tokenizer(
+            ex["input"],
+            max_length=self.max_input_len,
+            padding="max_length",
             truncation=True,
-            return_tensors='pt'
+            return_tensors="pt",
         )
-        
-        target_encoding = self.tokenizer(
-            target_text,
-            max_length=128,  # Agent sequences are short
-            padding='max_length',
+
+        target_enc = self.tokenizer(
+            ex["target"],
+            max_length=8,
+            padding="max_length",
             truncation=True,
-            return_tensors='pt'
+            return_tensors="pt",
         )
-        
+
         return {
-            'input_ids': input_encoding['input_ids'].squeeze(),
-            'attention_mask': input_encoding['attention_mask'].squeeze(),
-            'labels': target_encoding['input_ids'].squeeze(),
-            'query': example.get("query", ""),
-            'agent_sequence': example.get("agent_sequence", [])
+            "input_ids": input_enc["input_ids"].squeeze(),
+            "attention_mask": input_enc["attention_mask"].squeeze(),
+            "labels": target_enc["input_ids"].squeeze(),
         }
-
-
-class SequenceCoherenceLoss(nn.Module):
-    """
-    Sequence-Coherence Loss for orchestration training.
-    
-    According to PEARL:
-    - Penalizes invalid agent sequences (e.g., answering before retriever)
-    - Rewards coherent sequences that follow workflow dependencies
-    - Ensures learned patterns respect agent dependencies
-    """
-    
-    def __init__(self, base_loss_fn, valid_sequences: List[List[str]], penalty_weight: float = 0.5):
-        super().__init__()
-        self.base_loss_fn = base_loss_fn
-        self.valid_sequences = valid_sequences
-        self.penalty_weight = penalty_weight
-        
-        # Define agent dependencies (e.g., answering requires retriever)
-        self.dependencies = {
-            "answering": ["retriever"],
-            "verifier": ["answering", "retriever"],
-            "multilingual": ["answering"]  # Can work on its own but often after answering
-        }
-    
-    def is_valid_sequence(self, sequence: List[str]) -> bool:
-        """Check if agent sequence respects dependencies"""
-        # Check dependencies
-        for i, agent in enumerate(sequence):
-            if agent in self.dependencies:
-                required = self.dependencies[agent]
-                # Check if all required agents appear before this agent
-                for req_agent in required:
-                    if req_agent not in sequence[:i]:
-                        return False
-        
-        # Check if sequence is in valid patterns
-        sequence_str = ",".join(sequence)
-        for valid_seq in self.valid_sequences:
-            valid_str = ",".join(valid_seq)
-            if sequence_str == valid_str:
-                return True
-        
-        return False
-    
-    def forward(self, predictions, labels, agent_sequences: Optional[List[List[str]]] = None):
-        """
-        Compute loss with sequence-coherence penalty
-        
-        Args:
-            predictions: Model predictions
-            labels: Ground truth labels
-            agent_sequences: Decoded agent sequences (if available)
-        """
-        # Base cross-entropy loss
-        base_loss = self.base_loss_fn(predictions, labels)
-        
-        # Sequence coherence penalty
-        coherence_penalty = 0.0
-        if agent_sequences:
-            invalid_count = 0
-            for sequence in agent_sequences:
-                if not self.is_valid_sequence(sequence):
-                    invalid_count += 1
-            
-            if len(agent_sequences) > 0:
-                invalid_ratio = invalid_count / len(agent_sequences)
-                coherence_penalty = self.penalty_weight * invalid_ratio
-        
-        total_loss = base_loss + coherence_penalty
-        
-        return total_loss
 
 
 class KnowledgeDistillationTrainer:
-    """
-    Trains Flan-T5-small to imitate expert orchestration.
-    
-    According to PEARL:
-    - Trains on query-to-workflow pairs from GPT-4 traces
-    - Uses sequence-coherence losses
-    - Applies invalid-sequence penalties
-    """
-    
+    """Trains Flan-T5-base on balanced classification data."""
+
     def __init__(
         self,
-        model_name: str = "google/flan-t5-small",
-        training_data_path: str = "data/expert_traces/training_data.jsonl",
-        output_dir: str = "models/flan_t5_orchestrator"
+        model_name: str = "google/flan-t5-base",
+        training_data_path: str = "data/expert_traces/classification_clean.jsonl",
+        output_dir: str = "models/flan_t5_base_orchestrator",
     ):
         self.model_name = model_name
         self.training_data_path = training_data_path
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
-        
-        # Initialize tokenizer and model
+
         logger.info(f"Loading model: {model_name}")
         self.tokenizer = T5Tokenizer.from_pretrained(model_name)
         self.model = T5ForConditionalGeneration.from_pretrained(model_name)
-        
-        # Add special tokens if needed
+
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
-        
-        # Valid agent sequences (from patterns)
-        self.valid_sequences = [
-            ["retriever", "answering"],
-            ["booster", "retriever", "answering"],
-            ["retriever", "answering", "verifier"],
-            ["booster", "retriever", "answering", "verifier"],
-            ["booster", "retriever", "answering", "verifier", "multilingual"]
-        ]
-    
+
     def train(
         self,
-        num_epochs: int = 3,
-        batch_size: int = 8,
-        learning_rate: float = 5e-5,
-        warmup_steps: int = 100,
-        resume_from_checkpoint: Optional[str] = None
+        num_epochs: int = 5,
+        batch_size: int = 16,
+        learning_rate: float = 3e-4,
+        warmup_steps: int = 50,
+        weight_decay: float = 0.01,
+        resume_from_checkpoint: Optional[str] = None,
     ):
-        """
-        Train the model
-        
-        Args:
-            num_epochs: Number of training epochs
-            batch_size: Training batch size
-            learning_rate: Learning rate
-            warmup_steps: Number of warmup steps
-            resume_from_checkpoint: Path to checkpoint directory to resume from (e.g., "models/flan_t5_orchestrator/checkpoint-200")
-        """
-        
-        # If resuming, load model from checkpoint
         if resume_from_checkpoint:
-            checkpoint_path = Path(resume_from_checkpoint)
-            if checkpoint_path.exists():
-                logger.info(f"Resuming training from checkpoint: {resume_from_checkpoint}")
-                # Load model and tokenizer from checkpoint
-                self.model = T5ForConditionalGeneration.from_pretrained(str(checkpoint_path))
-                self.tokenizer = T5Tokenizer.from_pretrained(str(checkpoint_path))
+            cp = Path(resume_from_checkpoint)
+            if cp.exists():
+                logger.info(f"Resuming from: {resume_from_checkpoint}")
+                self.model = T5ForConditionalGeneration.from_pretrained(str(cp))
+                self.tokenizer = T5Tokenizer.from_pretrained(str(cp))
             else:
-                logger.warning(f"Checkpoint not found: {resume_from_checkpoint}. Starting from scratch.")
+                logger.warning(f"Checkpoint not found: {resume_from_checkpoint}, starting fresh")
                 resume_from_checkpoint = None
-        
-        # Load dataset
-        dataset = OrchestrationDataset(self.training_data_path, self.tokenizer)
-        
-        # Training arguments
+
+        dataset = ClassificationDataset(self.training_data_path, self.tokenizer)
+
         training_args = TrainingArguments(
             output_dir=str(self.output_dir),
             num_train_epochs=num_epochs,
             per_device_train_batch_size=batch_size,
             learning_rate=learning_rate,
             warmup_steps=warmup_steps,
+            weight_decay=weight_decay,
             logging_dir=str(self.output_dir / "logs"),
             logging_steps=10,
             save_steps=100,
-            eval_strategy="no",  # Can add validation if needed
             save_total_limit=3,
+            eval_strategy="no",
             load_best_model_at_end=False,
-            push_to_hub=False
+            push_to_hub=False,
+            fp16=torch.cuda.is_available(),
         )
-        
-        # Data collator
+
         data_collator = DataCollatorForSeq2Seq(
             tokenizer=self.tokenizer,
             model=self.model,
-            padding=True
+            padding=True,
         )
-        
-        # Custom trainer with sequence-coherence loss
+
         trainer = Trainer(
             model=self.model,
             args=training_args,
             train_dataset=dataset,
             data_collator=data_collator,
-            tokenizer=self.tokenizer
+            tokenizer=self.tokenizer,
         )
-        
-        # Train (with optional resume)
-        if resume_from_checkpoint:
-            logger.info(f"Resuming training from checkpoint: {resume_from_checkpoint}")
-        else:
-            logger.info("Starting training from scratch...")
-        
+
+        logger.info("Starting classification training...")
         trainer.train(resume_from_checkpoint=resume_from_checkpoint)
-        
-        # Save model
+
         logger.info(f"Saving model to {self.output_dir}")
         self.model.save_pretrained(self.output_dir)
         self.tokenizer.save_pretrained(self.output_dir)
-        
         logger.info("Training complete!")
-    
-    def evaluate(self, test_data_path: str) -> Dict[str, float]:
-        """Evaluate the trained model"""
-        # Load test dataset
-        test_dataset = OrchestrationDataset(test_data_path, self.tokenizer)
-        
-        # Evaluation logic here
-        # For now, return placeholder
-        return {
-            "accuracy": 0.0,
-            "sequence_accuracy": 0.0
-        }
+
+    def quick_test(self, queries=None):
+        """Run a few test queries to check model output."""
+        if queries is None:
+            queries = [
+                "What is Section 302 IPC?",
+                "Compare Article 14 and Article 21",
+                "explain privacy",
+                "What were the charges against the accused?",
+                "How to file an FIR?",
+            ]
+
+        self.model.eval()
+        device = "cuda" if torch.cuda.is_available() else "cpu"
+        self.model.to(device)
+
+        print("\n" + "=" * 60)
+        print("Quick Test Results")
+        print("=" * 60)
+        for q in queries:
+            prompt = f"classify: {q}"
+            inputs = self.tokenizer(prompt, return_tensors="pt", max_length=128, truncation=True).to(device)
+            with torch.no_grad():
+                out = self.model.generate(inputs.input_ids, max_new_tokens=8, num_beams=4)
+            result = self.tokenizer.decode(out[0], skip_special_tokens=True).strip()
+            print(f"  Q: {q}")
+            print(f"  -> {result}")
+            print()
 
 
 def main():
-    """Main training function"""
-    import argparse
-    
-    parser = argparse.ArgumentParser(description="Train Flan-T5 orchestrator via knowledge distillation")
-    parser.add_argument("--data", type=str, default="data/expert_traces/training_data.jsonl",
-                       help="Path to training data")
-    parser.add_argument("--output", type=str, default="models/flan_t5_orchestrator",
-                       help="Output directory for trained model")
-    parser.add_argument("--epochs", type=int, default=3, help="Number of training epochs")
-    parser.add_argument("--batch_size", type=int, default=8, help="Batch size")
-    parser.add_argument("--lr", type=float, default=5e-5, help="Learning rate")
-    parser.add_argument("--resume_from", type=str, default=None,
-                       help="Path to checkpoint directory to resume from (e.g., models/flan_t5_orchestrator/checkpoint-200)")
-    
+    parser = argparse.ArgumentParser(description="PEARL: Train Flan-T5 routing classifier")
+    parser.add_argument("--data", type=str,
+                        default="data/expert_traces/classification_clean.jsonl")
+    parser.add_argument("--output", type=str, default="models/flan_t5_base_orchestrator")
+    parser.add_argument("--epochs", type=int, default=5)
+    parser.add_argument("--batch_size", type=int, default=16)
+    parser.add_argument("--lr", type=float, default=3e-4)
+    parser.add_argument("--resume_from", type=str, default=None)
+    parser.add_argument("--test_only", action="store_true", help="Skip training, just test existing model")
+
     args = parser.parse_args()
-    
-    # Initialize trainer
+
     trainer = KnowledgeDistillationTrainer(
         training_data_path=args.data,
-        output_dir=args.output
+        output_dir=args.output,
     )
-    
-    # Train
-    trainer.train(
-        num_epochs=args.epochs,
-        batch_size=args.batch_size,
-        learning_rate=args.lr,
-        resume_from_checkpoint=args.resume_from
-    )
-    
-    print("\n" + "="*60)
-    print("Knowledge Distillation Training Complete")
-    print("="*60)
+
+    if not args.test_only:
+        trainer.train(
+            num_epochs=args.epochs,
+            batch_size=args.batch_size,
+            learning_rate=args.lr,
+            resume_from_checkpoint=args.resume_from,
+        )
+
+    trainer.quick_test()
+
+    print("\n" + "=" * 60)
+    print("Knowledge Distillation Complete")
     print(f"Model saved to: {args.output}")
-    print("="*60)
+    print("=" * 60)
 
 
 if __name__ == "__main__":
     main()
-

@@ -107,13 +107,15 @@ class AnsweringAgent:
         """Initialize legal answer templates"""
         return {
             'system_prompt': """You are an expert legal research assistant specializing in Indian law. 
-Your role is to provide comprehensive, accurate legal information.
+Your role is to provide accurate legal information based on retrieved documents and verified legal knowledge.
 
-STRATEGY:
-1. FIRST: Use information from the provided retrieved documents when available
-2. SECOND: If documents don't contain sufficient information, use your knowledge of Indian law to provide a comprehensive answer
-3. ALWAYS: Clearly indicate the source of information (document-based vs. general knowledge)
-4. CITE: Use [doc_id] format for document-based claims, [General Knowledge] for other claims
+CRITICAL RULES:
+1. ONLY cite real, existing legal provisions (Articles, Sections, Acts)
+2. DO NOT fabricate or invent Article/Section numbers
+3. If documents are insufficient, use your verified knowledge of Indian law
+4. Keep answers focused and factual - do NOT list random provision numbers
+5. CITE: Use [doc_id] format for document-based claims, [General Knowledge] for other claims
+6. If you are unsure about a specific provision number, describe the concept instead
 
 RESPONSE FORMAT:
 Provide a comprehensive legal answer with the following structure:
@@ -427,3 +429,203 @@ Content: {content[:500]}...
             'citations_generated': 0
         }
         logger.info("AnsweringAgent metrics reset")
+
+
+# ---------------------------------------------------------------------------
+# ReAct wrapper  (uses the existing AnsweringAgent under the hood)
+# ---------------------------------------------------------------------------
+
+import json as _json
+from core.tools import Tool, ToolRegistry
+from core.base_react_agent import BaseReActAgent, AgentResult, groq_chat
+
+_ANSWERING_SYSTEM = (
+    "You are a Legal Answer Generation Agent in an Indian legal RAG system. "
+    "Your job is to generate a comprehensive, well-cited legal answer based "
+    "on retrieved documents.\n"
+    "You should draft an answer, check whether it covers all aspects of the "
+    "question, and refine it if needed."
+)
+
+
+class AnsweringReActAgent(BaseReActAgent):
+    """ReAct agent that wraps the existing AnsweringAgent capabilities."""
+
+    def __init__(self, answering_agent: "AnsweringAgent"):
+        tools = ToolRegistry()
+        super().__init__(
+            name="AnsweringAgent",
+            system_prompt=_ANSWERING_SYSTEM,
+            tools=tools,
+            max_steps=2,
+            direct_tool_execution=True,
+        )
+        self._agent = answering_agent
+        self._current_answer = ""
+        self._current_claims = []
+        self._register_tools()
+
+    def _register_tools(self):
+        self.tools.register(Tool(
+            name="draft_answer",
+            description=(
+                "Generate an initial legal answer from the query and "
+                "retrieved documents. Returns the answer text with citations."
+            ),
+            parameters={"query": "str"},
+            func=self._tool_draft,
+        ))
+        self.tools.register(Tool(
+            name="check_coverage",
+            description=(
+                "Check whether the current draft answer fully addresses all "
+                "aspects of the user's query. Returns missing aspects."
+            ),
+            parameters={"query": "str", "answer": "str"},
+            func=self._tool_check_coverage,
+        ))
+        self.tools.register(Tool(
+            name="refine_answer",
+            description=(
+                "Improve the current answer by addressing the feedback. "
+                "Returns the refined answer."
+            ),
+            parameters={"answer": "str", "feedback": "str"},
+            func=self._tool_refine,
+        ))
+
+    async def _tool_draft(self, query: str = "", **kw) -> str:
+        if self._current_answer:
+            return f"Answer already drafted ({len(self._current_answer)} chars). Give Final Answer now."
+        docs = self._context_docs
+        import logging as _lg
+        import time as _time
+        _lg.getLogger(__name__).info("draft_answer: calling generate_answer with %d docs", len(docs) if docs else 0)
+        result = self._agent.generate_answer(query, query, docs)
+        _lg.getLogger(__name__).info("draft_answer: generate_answer returned OK")
+        self._current_answer = result.get("answer_text", "")
+        self._current_claims = result.get("claims", [])
+        snippet = self._current_answer[:500]
+        sources = result.get("sources", [])
+        return (
+            f"Draft answer ({len(self._current_answer)} chars, "
+            f"{len(sources)} sources): {snippet}..."
+        )
+
+    async def _tool_check_coverage(
+        self, query: str = "", answer: str = "", **kw
+    ) -> str:
+        if not answer:
+            answer = self._current_answer
+        prompt = (
+            f"The user asked: \"{query}\"\n\n"
+            f"The current answer is:\n{answer[:1500]}\n\n"
+            f"Does this answer fully address all aspects of the question? "
+            f"List any missing aspects or topics that should be covered. "
+            f"If the answer is complete, say 'COMPLETE'."
+        )
+        resp = await groq_chat(
+            "You evaluate legal answers for completeness. Be specific about what is missing.",
+            prompt,
+        )
+        return resp or "COMPLETE"
+
+    async def _tool_refine(
+        self, answer: str = "", feedback: str = "", **kw
+    ) -> str:
+        if not answer:
+            answer = self._current_answer
+        docs_text = "\n".join(
+            (d.get("content", "") or d.get("snippet", ""))[:300]
+            for d in self._context_docs[:5]
+        )
+        prompt = (
+            f"Improve this legal answer based on the feedback.\n\n"
+            f"Current answer:\n{answer[:1500]}\n\n"
+            f"Feedback: {feedback}\n\n"
+            f"Available source documents:\n{docs_text[:2000]}\n\n"
+            f"Write the improved answer with proper legal citations."
+        )
+        refined = await groq_chat(
+            "You are a legal expert. Improve the answer. Include citations.",
+            prompt,
+        )
+        if refined:
+            self._current_answer = refined
+        return f"Refined answer ({len(self._current_answer)} chars): {self._current_answer[:500]}..."
+
+    # -- hooks --------------------------------------------------------------
+
+    def _build_task_prompt(self, context):
+        query = context.get("query", "")
+        docs = context.get("documents", [])
+        self._context_docs = docs
+        doc_count = len(docs)
+        return (
+            f"Generate a comprehensive legal answer for: \"{query}\"\n"
+            f"You have {doc_count} retrieved documents available.\n"
+            f"You MUST use the draft_answer tool first. Then give Final Answer."
+        )
+
+    def _build_citations_from_docs(self):
+        """Build citation dicts from retrieved documents for the UI."""
+        citations = []
+        for d in (self._context_docs or []):
+            is_web = d.get("doc_type") == "web_result"
+            citations.append({
+                "doc_id": d.get("doc_id", ""),
+                "title": d.get("title", "Unknown Source"),
+                "source": d.get("source", "") if is_web else d.get("doc_type", "database"),
+                "doc_type": d.get("doc_type", "document"),
+                "similarity_score": d.get("similarity_score", d.get("score", 0.0)),
+                "content": d.get("content", d.get("snippet", "")),
+                "url": d.get("source", "") if is_web else "",
+            })
+        return citations
+
+    def _extract_final_output(self, answer_text, context):
+        try:
+            data = _json.loads(answer_text)
+            answer = data.get("answer", self._current_answer)
+        except _json.JSONDecodeError:
+            answer = self._current_answer
+        if not answer:
+            answer = answer_text
+        claims = self._current_claims
+        if claims and not isinstance(claims[0], dict):
+            claims = [
+                {"text": getattr(c, "text", str(c)),
+                 "citations": getattr(c, "cited_doc_ids", [])}
+                for c in claims
+            ]
+        return {
+            "answer": answer,
+            "citations": self._build_citations_from_docs(),
+            "confidence": 0.7,
+            "claims": claims,
+        }
+
+    def _fallback(self, context):
+        if self._current_answer:
+            return {
+                "answer": self._current_answer,
+                "citations": self._build_citations_from_docs(),
+                "confidence": 0.5,
+                "claims": self._current_claims if isinstance(self._current_claims, list) else [],
+            }
+        query = context.get("query", "")
+        docs = context.get("documents", [])
+        result = self._agent.generate_answer(query, query, docs)
+        claims = result.get("claims", [])
+        if claims and not isinstance(claims[0], dict):
+            claims = [
+                {"text": getattr(c, "text", str(c)),
+                 "citations": getattr(c, "cited_doc_ids", [])}
+                for c in claims
+            ]
+        return {
+            "answer": result.get("answer_text", ""),
+            "citations": result.get("sources", []),
+            "confidence": result.get("confidence_score", 0.5),
+            "claims": claims,
+        }
