@@ -1,4 +1,4 @@
-﻿"""
+"""
 Agent Tools for PEARL - Expose pipeline capabilities as callable tools.
 Used by the ReAct research agent to decide when to search, rewrite, verify, etc.
 """
@@ -65,7 +65,6 @@ class AgentToolRunner:
                 return "Verification score: " + str(round(result.get("verification_score", 0.5), 2))
             if name == "detect_language":
                 query = kwargs.get("query", self._context.get("query", ""))
-                multi = self.agents.get("multilingual")
                 if not multi: return "Language: en"
                 result = await multi.process(query)
                 return "Language: " + result.get("language", "en") + "; Translated: " + (result.get("translated_query", "")[:100] or query[:100])

@@ -1,4 +1,4 @@
-﻿"""
+"""
 GPT-3.5-turbo Orchestrator -- zero-shot iterative orchestration via API.
 
 Uses the same iterative prompt format as the SLM orchestrators for a fair
@@ -20,7 +20,7 @@ try:
 except ImportError:
     OPENAI_AVAILABLE = False
 
-VALID_AGENTS = {"booster", "retriever", "answering", "verifier", "multilingual"}
+VALID_AGENTS = {"booster", "retriever", "answering", "verifier"}
 MAX_STEPS = 6
 
 SYSTEM_PROMPT = """You are an orchestrator for a multi-agent legal RAG system.
@@ -30,7 +30,6 @@ Available agents:
 - retriever: Searches the legal document database for relevant passages
 - answering: Generates a comprehensive answer from retrieved documents
 - verifier: Validates citations and cross-checks facts in the answer
-- multilingual: Handles non-English queries (detection and translation)
 
 At each step you see the user's query and the agents already called.
 Respond with EXACTLY ONE word: the next agent to call, or "done" to stop.

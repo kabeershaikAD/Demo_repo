@@ -58,12 +58,7 @@ class RuleBasedOrchestrator(BaseOrchestrator):
                 "agents": ["booster", "retriever", "answering"],
                 "description": "Procedural queries benefit from enhancement"
             },
-            {
-                "name": "multilingual",
-                "condition": lambda q: any(char in q for char in "अआइईउऊऋएऐओऔकखगघङचछजझञटठडढणतथदधनपफबभमयरलवशषसह"),
-                "agents": ["multilingual", "booster", "retriever", "answering"],
-                "description": "Hindi text detected"
-            },
+
             {
                 "name": "default",
                 "condition": lambda q: True,  # Catch-all

@@ -560,6 +560,8 @@ class AnsweringReActAgent(BaseReActAgent):
         query = context.get("query", "")
         docs = context.get("documents", [])
         self._context_docs = docs
+        self._current_answer = ""
+        self._current_claims = []
         doc_count = len(docs)
         return (
             f"Generate a comprehensive legal answer for: \"{query}\"\n"

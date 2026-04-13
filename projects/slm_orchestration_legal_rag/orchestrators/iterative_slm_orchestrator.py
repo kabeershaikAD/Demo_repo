@@ -27,7 +27,7 @@ from core.base_orchestrator import BaseOrchestrator, OrchestrationDecision
 
 logger = logging.getLogger(__name__)
 
-VALID_AGENTS = {"booster", "retriever", "answering", "verifier", "multilingual"}
+VALID_AGENTS = {"booster", "retriever", "answering", "verifier"}
 MAX_STEPS = 6
 
 
@@ -149,9 +149,9 @@ class IterativeSLMOrchestrator(BaseOrchestrator):
     def _allowed_actions(self, history: List[str]) -> List[str]:
         """Restrict allowed actions by workflow state so we never do answering before retriever or done at step 1."""
         if not history:
-            return ["booster", "retriever", "multilingual"]
+            return ["booster", "retriever"]
         if "retriever" not in history:
-            return ["booster", "retriever", "multilingual"]
+            return ["booster", "retriever"]
         if "answering" not in history:
             return ["answering", "done"]
         return ["verifier", "done"]

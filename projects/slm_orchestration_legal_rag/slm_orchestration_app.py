@@ -22,11 +22,10 @@ from booster_agent import PromptBooster
 from retriever_agent import RetrieverAgent
 from answering_agent import AnsweringAgent
 from citation_verifier import CitationVerifier
-from multilingual_agent import MultilingualAgent
 
 from agent_adapters import (
     BoosterAdapter, RetrieverAdapter, AnsweringAdapter,
-    VerifierAdapter, MultilingualAdapter
+    VerifierAdapter
 )
 
 from config import config
@@ -109,7 +108,6 @@ class SLMOrchestrationApp:
             "retriever": RetrieverAdapter(RetrieverAgent()),
             "answering": AnsweringAdapter(AnsweringAgent()),
             "verifier": VerifierAdapter(CitationVerifier()),
-            "multilingual": MultilingualAdapter(MultilingualAgent()),
         }
 
         for name, agent in self.agents.items():
@@ -210,10 +208,6 @@ class SLMOrchestrationApp:
                     context["claims_verified"] = result.get("claims_verified", 0)
                     context["total_claims"] = result.get("total_claims", 0)
                     context["verification_issues"] = result.get("issues", [])
-                elif agent_name == "multilingual":
-                    result = await agent.process(query)
-                    context["language"] = result.get("language", "en")
-                    context["translated_query"] = result.get("translated_query", query)
                 trace = getattr(agent, "last_trace", [])
                 if trace:
                     reasoning_traces[agent_name] = [

@@ -1,4 +1,4 @@
-﻿"""
+"""
 Agent Adapters for SLM Orchestration Framework.
 
 Each adapter wraps a ReAct agent and provides a simple ``process()`` API
@@ -272,20 +272,3 @@ class VerifierAdapter(AgentAdapter):
         }
 
 
-class MultilingualAdapter(AgentAdapter):
-    """Adapter for MultilingualAgent (unchanged, no ReAct needed)."""
-
-    async def process(self, query: str) -> Dict[str, Any]:
-        if not self.initialized:
-            await self.initialize()
-
-        if hasattr(self.agent, "process_query"):
-            result = self.agent.process_query(query)
-            return {
-                "language": result.get("detected_language", result.get("language", "en")),
-                "translated_query": result.get("processed_query", result.get("translated_query", query)),
-                "confidence": result.get("language_confidence", result.get("confidence", 0.8)),
-                "response_language": result.get("response_language", "en"),
-                "is_english": result.get("is_english", True),
-            }
-        return {"language": "en", "translated_query": query, "confidence": 0.5}

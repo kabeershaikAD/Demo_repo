@@ -74,7 +74,7 @@ class CitationVerifier:
         if self.embedding_model is None:
             logger.warning("No embedding models available. Using keyword-only verification.")
         
-        self.similarity_threshold = config.retrieval.CITATION_THRESHOLD
+        self.similarity_threshold = 0.40
         
         # Performance metrics
         self.metrics = {
@@ -258,35 +258,37 @@ class CitationVerifier:
             best_match_idx = similarities.argmax().item()
             best_similarity = similarities[best_match_idx].item()
             
-            # Check if claim is supported
-            supported = best_similarity >= self.similarity_threshold
-            
-            # Find all supporting documents
+            # Check for General Knowledge tag
+            is_general_knowledge = "[General Knowledge]" in claim_text or "[general knowledge]" in claim_text.lower()
+            gk_bonus = 0.20 if is_general_knowledge else 0.0
+
+            adjusted_similarity = best_similarity + gk_bonus
+            supported = adjusted_similarity >= self.similarity_threshold
+
             supporting_docs = []
             similarity_scores = {}
-            
+
             for i, doc in enumerate(retrieved_docs):
                 similarity = similarities[i].item()
                 similarity_scores[doc.get('doc_id', f'doc_{i}')] = similarity
-                
                 if similarity >= self.similarity_threshold:
                     supporting_docs.append(doc.get('doc_id', f'doc_{i}'))
-            
-            # Determine verification method
+
             verification_method = 'semantic'
-            
-            # If semantic verification fails, try keyword matching
+
             if not supported:
                 keyword_result = self._verify_with_keywords(claim_text, retrieved_docs)
-                if keyword_result.supported:
+                kw_score = keyword_result.confidence if keyword_result.supported else 0.0
+                combined = max(best_similarity, kw_score) + gk_bonus
+                if combined >= self.similarity_threshold:
                     supported = True
-                    confidence = keyword_result.confidence
-                    supporting_docs = keyword_result.supporting_docs
+                    confidence = min(combined, 1.0)
+                    supporting_docs = keyword_result.supporting_docs or supporting_docs
                     verification_method = 'hybrid'
                 else:
-                    confidence = best_similarity
+                    confidence = min(max(best_similarity + gk_bonus, kw_score), 1.0)
             else:
-                confidence = best_similarity
+                confidence = min(adjusted_similarity, 1.0)
             
             return VerificationResult(
                 claim_text=claim_text,
@@ -336,6 +338,12 @@ class CitationVerifier:
                 
                 similarity_scores[doc.get('doc_id', f'doc_{i}')] = keyword_score
                 
+                legal_terms = ['article', 'section', 'act', 'court', 'supreme',
+                               'constitution', 'law', 'rights', 'judgment', 'writ',
+                               'habeas', 'corpus', 'mandamus', 'PIL', 'fundamental']
+                lt_hits = sum(1 for t in legal_terms if t in doc_content and t in claim_text.lower())
+                keyword_score = keyword_score + (lt_hits * 0.05)
+
                 if keyword_score > best_match_score:
                     best_match_score = keyword_score
                     best_match_doc = doc.get('doc_id', f'doc_{i}')

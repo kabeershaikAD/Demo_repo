@@ -124,8 +124,7 @@ class GPT4Orchestrator(BaseOrchestrator):
         - retriever: Searches document database
         - answering: Creates comprehensive answers
         - verifier: Validates citations and facts
-        - multilingual: Handles language detection and translation
-        - updater: Checks for recent updates
+                - updater: Checks for recent updates
         
         Routing rules:
         - Simple factual queries: retriever → answering

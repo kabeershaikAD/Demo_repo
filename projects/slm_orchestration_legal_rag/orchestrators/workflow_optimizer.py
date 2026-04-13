@@ -50,7 +50,7 @@ class WorkflowOptimizer:
             "answering": AgentDependency(
                 agent="answering",
                 requires=["retriever"],  # Answering needs retrieval first
-                optional_after=["verifier", "multilingual"],
+                optional_after=["verifier"],
                 conflicts_with=[]
             ),
             "verifier": AgentDependency(
@@ -59,12 +59,6 @@ class WorkflowOptimizer:
                 optional_after=["multilingual"],
                 conflicts_with=[]
             ),
-            "multilingual": AgentDependency(
-                agent="multilingual",
-                requires=["answering"],  # Works on answer
-                optional_after=[],
-                conflicts_with=[]
-            )
         }
     
     def optimize_workflow(
@@ -155,18 +149,9 @@ class WorkflowOptimizer:
         
         # For moderate complexity, can skip some agents
         if complexity == "moderate":
-            # Can skip multilingual if not needed
-            if "multilingual" in sequence and not self._needs_multilingual(query):
-                sequence = [a for a in sequence if a != "multilingual"]
+            pass
         
         return sequence
-    
-    def _needs_multilingual(self, query: str) -> bool:
-        """Check if query needs multilingual support"""
-        # Simple heuristic: check for non-English characters or language indicators
-        query_lower = query.lower()
-        multilingual_indicators = ["hindi", "tamil", "telugu", "marathi", "gujarati", "bengali"]
-        return any(indicator in query_lower for indicator in multilingual_indicators)
     
     def _remove_redundant_calls(self, sequence: List[str], analysis: Dict[str, Any]) -> List[str]:
         """
